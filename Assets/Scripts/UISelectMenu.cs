@@ -18,7 +18,7 @@ public class UISelectMenu : MonoBehaviour
     private Image playImage;
     [SerializeField]
     private Image prefImage;
-    private int minHobbies = 3;
+    private int minHobbies = 4;
     private int maxHobbies = 15;
 
     [Header("Container")]
@@ -34,8 +34,10 @@ public class UISelectMenu : MonoBehaviour
     [SerializeField] private GameObject categoryTab;
     [SerializeField] private GameObject sectionTab;
 
-    [Header("Counter")]
+    [Header("Texts")]
     [SerializeField] private Text selectedCount;
+    [SerializeField] private GameObject addPreferencesPrompt;
+    [SerializeField] private GameObject minimumWarning;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject selectedListPrefab;
@@ -230,9 +232,15 @@ public class UISelectMenu : MonoBehaviour
         selectedCount.text = number.ToString();
 
         if (number >= minHobbies)
+        {
             selectedCount.color = new Color(0.15f, 0.15f, 0.15f);
+            minimumWarning.SetActive(false);
+        }
         else
+        {
             selectedCount.color = Palette.Red3;
+            minimumWarning.SetActive(true);
+        }
     }
 
     public void SavePersonalList()
@@ -268,6 +276,7 @@ public class UISelectMenu : MonoBehaviour
         playBtn.interactable = haveMinimum;
         playImage.color = haveMinimum ? Palette.Red3 : Palette.Red1;
         prefImage.color = haveMinimum ? Palette.Red1 : Palette.Red3;
+        addPreferencesPrompt.SetActive(!haveMinimum);
     }
 
     public void ExitGame() => Application.Quit(0);

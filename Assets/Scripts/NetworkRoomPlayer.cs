@@ -3,6 +3,8 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 using System;
+using System.Net;
+using System.Linq;
 
 /*
 	Documentation: https://mirror-networking.gitbook.io/docs/guides/networkbehaviour
@@ -18,6 +20,8 @@ public class NetworkRoomPlayer : NetworkBehaviour
     [SerializeField] private Button startGameBtn = null;
     [SerializeField] private GameObject RoomPlayersLayout = null;
     [SerializeField] private GameObject RoomPlayerPrefab = null;
+    [SerializeField] private Text ipInfo;
+    [SerializeField] private Text minPlayerWarning;
 
     [Header("SyncVars")]
     [SyncVar(hook = nameof(HandleDisplayNameChanged))]
@@ -34,6 +38,8 @@ public class NetworkRoomPlayer : NetworkBehaviour
             isFirstPlayer = value;
             startGameBtn.gameObject.SetActive(value);
             HandleReadyToStart(false);
+            ipInfo.gameObject.SetActive(true);
+            ipInfo.text = "Dirección IP: " + GetLocalIPv4();
         }
     }
 
@@ -72,11 +78,18 @@ public class NetworkRoomPlayer : NetworkBehaviour
             Destroy(RoomPlayersLayout.transform.GetChild(i).gameObject);
         }
 
-        for (int i = 0; i < Room.RoomPlayers.Count; i++)
+        int index = 0;
+        for (; index < Room.RoomPlayers.Count; index++)
         {
             GameObject actual = Instantiate(RoomPlayerPrefab, RoomPlayersLayout.transform);
-            actual.transform.GetChild(0).GetComponent<Text>().text = Room.RoomPlayers[i].DisplayName;
-            actual.transform.GetChild(1).GetComponent<Text>().text = Room.RoomPlayers[i].IsReady ? "Listo" : "No listo";
+            actual.transform.GetChild(0).GetComponent<Text>().text = Room.RoomPlayers[index].DisplayName;
+            actual.transform.GetChild(1).GetComponent<Text>().text = Room.RoomPlayers[index].IsReady ? "Listo" : "No listo";
+        }
+
+        if (index < Room.minPlayers - 1)
+        {
+            minPlayerWarning.gameObject.SetActive(true);
+            minPlayerWarning.text = "¡Faltan " + (Room.minPlayers - index) + " jugadores!";
         }
     }
 
@@ -113,6 +126,14 @@ public class NetworkRoomPlayer : NetworkBehaviour
         if (Room.RoomPlayers[0].connectionToClient != connectionToClient) return;
 
         Room.ServerStartGame();
+    }
+
+    public string GetLocalIPv4()
+    {
+        return Dns.GetHostEntry(Dns.GetHostName())
+            .AddressList.First(
+                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            .ToString();
     }
 
     #endregion

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 public class MainNetworkManager : NetworkManager
 {
-    [Tooltip("Provisional")] [SerializeField] private int minPlayers = 2; //Minimo de 4 jugadores
+    public int minPlayers { get; } = 4; //Minimo de 4 jugadores
 
     [Scene] [SerializeField] private string menuScene = "";
 

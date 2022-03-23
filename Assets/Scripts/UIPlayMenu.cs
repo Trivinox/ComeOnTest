@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +12,6 @@ public class UIPlayMenu : MonoBehaviour
     [Header("Text Inputs")]
     [SerializeField] private InputField nameInput = null;
     [SerializeField] private InputField ipAddressInput = null;
-    
     public static string DisplayName { get; private set; } 
     private readonly string prefsNameKey = "PlayerName";
 
